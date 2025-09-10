@@ -3,6 +3,7 @@ package cc.zyrn.duels.match;
 import cc.zyrn.duels.Duels;
 import cc.zyrn.duels.arena.Arena;
 import cc.zyrn.duels.kit.Kit;
+import cc.zyrn.duels.match.listener.MatchListener;
 import cc.zyrn.duels.match.task.MatchCountdownTask;
 import cc.zyrn.duels.profile.Profile;
 import lombok.Getter;
@@ -21,6 +22,7 @@ public class MatchHandler {
         this.matches = new ArrayList<>();
 
         duels.getServer().getScheduler().runTaskTimer(duels, new MatchCountdownTask(this), 20L, 20L);
+        duels.getServer().getPluginManager().registerEvents(new MatchListener(duels), duels);
     }
 
     public final void createMatch(Profile playerOne, Profile playerTwo, Arena arena, Kit kit) {

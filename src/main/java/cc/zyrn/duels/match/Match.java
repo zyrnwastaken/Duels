@@ -8,6 +8,8 @@ import lombok.Setter;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 
+import java.util.UUID;
+
 @Getter
 @Setter
 public class Match {
@@ -39,8 +41,18 @@ public class Match {
     }
 
     public final void start() {
-        if (playerOne == null || playerTwo == null) {
-            this.cancel();
+        if (playerOne == null && playerTwo == null) {
+            this.cancel(null);
+            return;
+        }
+
+        if (playerOne == null) {
+            this.cancel(playerOneProfile.getUuid());
+            return;
+        }
+
+        if (playerTwo == null) {
+            this.cancel(playerTwoProfile.getUuid());
             return;
         }
 
@@ -51,15 +63,30 @@ public class Match {
         kit.apply(playerTwo);
     }
 
-    public final void cancel() {
-        if (this.playerOneProfile != null)
-            this.playerOneProfile.setMatch(null, playerOne != null);
-
-        if (this.playerTwoProfile != null)
-            this.playerTwoProfile.setMatch(null, playerTwo != null);
-
+    public final void cancel(UUID loser) {
         arena.setInUse(false);
         this.matchState = MatchState.ENDED;
+
+        if (loser == null)
+            return;
+
+        final Profile winnerProfile = loser == playerOneProfile.getUuid() ?
+                playerTwoProfile : playerOneProfile;
+
+        final Profile loserProfile = winnerProfile == playerOneProfile ?
+                playerTwoProfile : playerOneProfile;
+
+        if (winnerProfile != null) {
+            winnerProfile.setMatch(null, playerOne != null);
+            winnerProfile.setWins(winnerProfile.getWins() + 1);
+            winnerProfile.setMatches(winnerProfile.getMatches() + 1);
+        }
+
+        if (loserProfile != null) {
+            loserProfile.setMatch(null, playerTwo != null);
+            loserProfile.setLosses(loserProfile.getLosses() + 1);
+            loserProfile.setMatches(loserProfile.getMatches() + 1);
+        }
     }
 
 }
