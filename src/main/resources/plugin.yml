@@ -1,0 +1,5 @@
+name: Duels
+main: cc.zyrn.duels.Duels
+description: Duels plugin
+author: Zyrn
+api-version: 1.13
